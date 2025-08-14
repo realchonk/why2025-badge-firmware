@@ -12,6 +12,8 @@
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <badgevms/device.h>
+#include <unistd.h>
 
 #define STEP_RATE_IN_MILLISECONDS  125
 #define SNAKE_BLOCK_SIZE_IN_PIXELS 24
@@ -97,6 +99,8 @@ static void new_food_pos_(SnakeContext *ctx) {
 }
 
 void snake_initialize(SnakeContext *ctx) {
+    vibrator_device_t *vibr;
+
     int i;
     SDL_zeroa(ctx->cells);
     ctx->head_xpos = ctx->tail_xpos = SNAKE_GAME_WIDTH / 2;
@@ -109,6 +113,16 @@ void snake_initialize(SnakeContext *ctx) {
         new_food_pos_(ctx);
         ++ctx->occupied_cells;
     }
+
+    vibr = (vibrator_device_t *)device_get ("VIBRATOR0");
+    if (vibr == NULL) {
+	puts ("No vibrator found!");
+	return;
+    }
+
+    vibr->_set (vibr, true);
+    sleep (1);
+    vibr->_set (vibr, false);
 }
 
 void snake_redir(SnakeContext *ctx, SnakeDirection dir) {
