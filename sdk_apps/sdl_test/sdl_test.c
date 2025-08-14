@@ -42,12 +42,12 @@ typedef enum { SNAKE_DIR_RIGHT, SNAKE_DIR_UP, SNAKE_DIR_LEFT, SNAKE_DIR_DOWN } S
 
 typedef struct {
     unsigned char cells[(SNAKE_MATRIX_SIZE * SNAKE_CELL_MAX_BITS) / 8U];
-    char          head_xpos;
-    char          head_ypos;
-    char          tail_xpos;
-    char          tail_ypos;
-    char          next_dir;
-    char          inhibit_tail_step;
+    int8_t        head_xpos;
+    int8_t        head_ypos;
+    int8_t        tail_xpos;
+    int8_t        tail_ypos;
+    int8_t        next_dir;
+    int8_t        inhibit_tail_step;
     unsigned      occupied_cells;
 } SnakeContext;
 
@@ -58,7 +58,7 @@ typedef struct {
     Uint64        last_step;
 } AppState;
 
-SnakeCell snake_cell_at(SnakeContext const *ctx, char x, char y) {
+SnakeCell snake_cell_at(SnakeContext const *ctx, int8_t x, int8_t y) {
     int const      shift = SHIFT(x, y);
     unsigned short range;
     SDL_memcpy(&range, ctx->cells + (shift / 8), sizeof(range));
@@ -70,7 +70,7 @@ static void set_rect_xy_(SDL_FRect *r, short x, short y) {
     r->y = (float)(y * SNAKE_BLOCK_SIZE_IN_PIXELS);
 }
 
-static void put_cell_at_(SnakeContext *ctx, char x, char y, SnakeCell ct) {
+static void put_cell_at_(SnakeContext *ctx, int8_t x, int8_t y, SnakeCell ct) {
     int const            shift  = SHIFT(x, y);
     int const            adjust = shift % 8;
     unsigned char *const pos    = ctx->cells + (shift / 8);
@@ -87,8 +87,8 @@ static int are_cells_full_(SnakeContext *ctx) {
 
 static void new_food_pos_(SnakeContext *ctx) {
     while (true) {
-        char const x = (char)SDL_rand(SNAKE_GAME_WIDTH);
-        char const y = (char)SDL_rand(SNAKE_GAME_HEIGHT);
+        int8_t const x = (int8_t)SDL_rand(SNAKE_GAME_WIDTH);
+        int8_t const y = (int8_t)SDL_rand(SNAKE_GAME_HEIGHT);
         if (snake_cell_at(ctx, x, y) == SNAKE_CELL_NOTHING) {
             put_cell_at_(ctx, x, y, SNAKE_CELL_FOOD);
             break;
@@ -119,7 +119,7 @@ void snake_redir(SnakeContext *ctx, SnakeDirection dir) {
     }
 }
 
-static void wrap_around_(char *val, char max) {
+static void wrap_around_(int8_t *val, int8_t max) {
     if (*val < 0) {
         *val = max - 1;
     } else if (*val > max - 1) {
@@ -130,8 +130,8 @@ static void wrap_around_(char *val, char max) {
 void snake_step(SnakeContext *ctx) {
     SnakeCell const dir_as_cell = (SnakeCell)(ctx->next_dir + 1);
     SnakeCell       ct;
-    char            prev_xpos;
-    char            prev_ypos;
+    int8_t            prev_xpos;
+    int8_t            prev_ypos;
     /* Move tail forward */
     if (--ctx->inhibit_tail_step == 0) {
         ++ctx->inhibit_tail_step;
