@@ -34,6 +34,7 @@
 #include "drivers/st7703.h"
 #include "drivers/tca8418.h"
 #include "drivers/tty.h"
+#include "drivers/vibrator.h"
 #include "drivers/wifi.h"
 #include "esp_debug_helpers.h"
 #include "esp_event.h"
@@ -162,6 +163,10 @@ int app_main(void) {
     if (!device_register("ORIENTATION0", bosch_bmi270_sensor_create())) {
         ESP_LOGE(TAG, "Failed to initialize ORIENTATION0 driver");
         // invalidate_ota_partition();
+    }
+
+    if (!device_register("VIBRATOR0", vibrator_create())) {
+	ESP_LOGE(TAG, "Failed to initialize VIBRATOR0 driver");
     }
 
     if (!compositor_init("PANEL0", "KEYBOARD0")) {

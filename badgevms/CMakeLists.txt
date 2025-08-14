@@ -15,6 +15,7 @@ idf_component_register(
      "drivers/fatfs.c"
      "drivers/socket.c"
      "drivers/st7703.c"
+     "drivers/vibrator.c"
      "drivers/tca8418.c"
      "drivers/tty.c"
      "drivers/wifi.c"

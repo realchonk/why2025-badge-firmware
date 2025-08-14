@@ -35,6 +35,7 @@ typedef enum {
     DEVICE_TYPE_ORIENTATION,
     DEVICE_TYPE_SOCKET,
     DEVICE_TYPE_FILESYSTEM,
+    DEVICE_TYPE_VIBRATOR,
 } device_type_t;
 
 typedef enum { ORIENTATION_0, ORIENTATION_90, ORIENTATION_180, ORIENTATION_270 } orientation_t;
@@ -101,5 +102,11 @@ typedef struct {
     orientation_t (*_get_orientation)(void *dev);
     int (*_get_orientation_degrees)(void *dev);
 } orientation_device_t;
+
+typedef struct {
+    device_t device;
+    void (*_set)(void *dev, bool vibrating);
+    bool (*_get)(void *dev);
+} vibrator_device_t;
 
 device_t *device_get(char const *name);
